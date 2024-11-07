@@ -3,6 +3,8 @@ import { z } from "zod";
 import { sql } from "@vercel/postgres";
 import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
+import { AuthError } from "next-auth";
+import { signIn } from "@/auth";
 
 const FormSchema = z.object({
   id: z.string(),
@@ -24,7 +26,6 @@ export async function createInvoice(formData: FormData) {
     });
     const amountInCents = amount * 100;
     const date = new Date().toISOString().split("T")[0];
-    console.log("🚀 ~  file: actions.ts:22 ~  createInvoice ~  date:", date);
     const res = await sql`
           INSERT INTO invoices (customer_id, amount, status, date)
           VALUES (${customerId}, ${amountInCents}, ${status}, ${date})
@@ -73,6 +74,25 @@ export async function deleteInvoice(id: string) {
     revalidatePath("/ui/dashboard/invoices");
   } catch (error) {
     console.error("file: actions.ts:60 ~  deleteInvoice ~  error:", error);
+    throw error;
+  }
+}
+
+export async function authenticate(
+  prevState: string | undefined,
+  formData: FormData,
+) {
+  try {
+    await signIn('credentials', formData);
+  } catch (error) {
+    if (error instanceof AuthError) {
+      switch (error.type) {
+        case 'CredentialsSignin':
+          return 'Invalid credentials.';
+        default:
+          return 'Something went wrong.';
+      }
+    }
     throw error;
   }
 }
