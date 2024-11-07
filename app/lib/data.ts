@@ -86,7 +86,7 @@ export async function fetchCardData() {
 const ITEMS_PER_PAGE = 6;
 export async function fetchFilteredInvoices(
   query: string,
-  currentPage: number
+  currentPage: number,
 ) {
   const offset = (currentPage - 1) * ITEMS_PER_PAGE;
 
@@ -162,7 +162,7 @@ export async function fetchInvoiceById(id: string) {
     } catch (error) {
       console.error(
         "🚀 ~  file: data.ts:163 ~  fetchInvoiceById ~  error:",
-        error
+        error,
       );
     }
     return undefined;

@@ -26,7 +26,7 @@ export async function createInvoice(formData: FormData) {
     });
     const amountInCents = amount * 100;
     const date = new Date().toISOString().split("T")[0];
-    const res = await sql`
+    await sql`
           INSERT INTO invoices (customer_id, amount, status, date)
           VALUES (${customerId}, ${amountInCents}, ${status}, ${date})
         `;
@@ -35,7 +35,7 @@ export async function createInvoice(formData: FormData) {
   } catch (error) {
     console.error(
       "🚀 ~  file: actions.ts:35 ~  createInvoice ~  error:",
-      error
+      error,
     );
     throw error;
   }
@@ -62,7 +62,7 @@ export async function updateInvoice(id: string, formData: FormData) {
   } catch (error) {
     console.error(
       "🚀 ~  file: actions.ts:55 ~  updateInvoice ~  error:",
-      error
+      error,
     );
     throw error;
   }
@@ -83,14 +83,14 @@ export async function authenticate(
   formData: FormData,
 ) {
   try {
-    await signIn('credentials', formData);
+    await signIn("credentials", formData);
   } catch (error) {
     if (error instanceof AuthError) {
       switch (error.type) {
-        case 'CredentialsSignin':
-          return 'Invalid credentials.';
+        case "CredentialsSignin":
+          return "Invalid credentials.";
         default:
-          return 'Something went wrong.';
+          return "Something went wrong.";
       }
     }
     throw error;
